@@ -5,10 +5,10 @@
   ...
 }:
 with lib; let
-  cfg = config.tools.tplr;
+  cfg = config.programs.tplr;
 in {
   options = {
-    tools.tplr = {
+    programs.tplr = {
       enable = mkEnableOption "tplr";
 
       templates = mkOption {
