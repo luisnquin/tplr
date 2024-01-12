@@ -2,29 +2,27 @@
   description = "Error ocurred at 224, too specific.";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+    systems.url = "github:nix-systems/default-linux";
   };
 
   outputs = inputs @ {
     self,
-    flake-utils,
+    systems,
     nixpkgs,
     ...
-  }:
-    flake-utils.lib.eachDefaultSystem (
-      system: let
-        pkgs = import nixpkgs {
-          inherit system;
-        };
+  }: let
+    inherit (nixpkgs) lib;
+    eachSystem = lib.genAttrs (import systems);
+  in rec {
+    packages = eachSystem (system: rec {
+      pkgs = import nixpkgs {
+        localSystem = system;
+      };
 
-        packages = {
-          tplr = pkgs.callPackage ./default.nix {};
-        };
-      in {
-        inherit packages;
+      tplr = pkgs.callPackage ./default.nix {};
+      default = tplr;
+    });
 
-        defaultPackage = packages.tplr;
-        homeManagerModules.default = import ./nix/hm-module.nix self;
-      }
-    );
+    homeManagerModules.default = import ./nix/hm-module.nix self;
+  };
 }

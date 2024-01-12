@@ -1,4 +1,4 @@
-{
+self: {
   config,
   pkgs,
   lib,
@@ -6,6 +6,8 @@
 }:
 with lib; let
   cfg = config.programs.tplr;
+
+  inherit (pkgs.stdenv.hostPlatform) system;
 in {
   options = {
     programs.tplr = {
@@ -20,7 +22,7 @@ in {
 
   config = mkIf cfg.enable {
     home.packages = [
-      (pkgs.callPackage ../../tplr {})
+      self.packages.${system}.tplr
     ];
 
     xdg.configFile = {
