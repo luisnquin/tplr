@@ -5,7 +5,8 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = {
+  outputs = inputs @ {
+    self,
     flake-utils,
     nixpkgs,
     ...
@@ -23,6 +24,7 @@
         inherit packages;
 
         defaultPackage = packages.tplr;
+        homeManagerModules.default = import ./nix/hm-module.nix self;
       }
     );
 }
